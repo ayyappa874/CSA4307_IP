@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>City Library - Library Management System</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: Arial, sans-serif; background: #f0f4f8; color: #1f2937; }
+section { scroll-margin-top: 60px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 50px 15px; }
+.title { text-align: center; color: #1e3a8a; font-size: 1.8rem; margin-bottom: 6px; }
+.subtitle { text-align: center; color: #6b7280; margin-bottom: 25px; }
+
+/* ---------- Navigation ---------- */
+nav { background: #1e3a8a; display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: center; position: sticky; top: 0; z-index: 10;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
+nav .logo { color: #fbbf24; font-weight: bold; font-size: 1.3rem; padding: 14px 22px; }
+nav a { color: white; padding: 14px 18px; text-decoration: none; }
+nav a:hover { background: #3b82f6; }
+nav .user { background: #f59e0b; color: white; margin: 6px 12px; padding: 8px 14px;
+            border-radius: 20px; font-weight: bold; display: none; }
+
+/* ---------- Hero ---------- */
+#home { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; text-align: center; }
+#home .wrap { padding: 80px 15px; }
+#home h1 { font-size: 2.4rem; margin-bottom: 12px; }
+#home p { font-size: 1.1rem; opacity: 0.92; margin-bottom: 26px; }
+.btn { display: inline-block; padding: 12px 26px; border-radius: 6px; text-decoration: none;
+       font-weight: bold; margin: 5px; }
+.btn.gold { background: #f59e0b; color: white; }
+.btn.light { background: white; color: #1e3a8a; }
+.btn:hover { opacity: 0.88; }
+
+/* ---------- Perks strip ---------- */
+.perks { background: white; display: flex; flex-wrap: wrap; justify-content: center;
+         gap: 10px 40px; padding: 18px 15px; font-weight: bold; color: #1e3a8a; }
+
+/* ---------- Common form and table styles ---------- */
+.card { background: white; border-radius: 10px; padding: 25px; margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+.card h3 { color: #1e3a8a; margin-bottom: 12px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+input, select, textarea { padding: 10px; border: 2px solid #ccc; border-radius: 5px;
+        font-size: 16px; font-family: Arial, sans-serif; flex: 1 1 150px; min-width: 0; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #2563eb; }
+label { font-weight: bold; color: #333; display: block; margin-top: 10px; }
+button { padding: 10px 18px; background: #2563eb; color: white; border: none;
+         border-radius: 5px; font-size: 15px; cursor: pointer; }
+button:hover { background: #1e3a8a; }
+button.danger { background: #dc2626; }
+.scroll { overflow-x: auto; background: white; border-radius: 8px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+table { width: 100%; border-collapse: collapse; min-width: 560px; }
+th { background: #1e3a8a; color: white; text-align: left; padding: 10px; }
+td { padding: 10px; border-bottom: 1px solid #e5e7eb; }
+tr:hover td { background: #f1f5f9; }
+.pill { padding: 3px 10px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+.ok { background: #d1fae5; color: #065f46; }
+.no { background: #fee2e2; color: #991b1b; }
+.warn { background: #fef3c7; color: #92400e; }
+.empty { padding: 20px; text-align: center; color: #6b7280; }
+.hint { color: #6b7280; font-size: 14px; margin-top: 10px; }
+
+/* ---------- Materials and account ---------- */
+#materials { background: #e0e7ff; }
+#account .two { display: flex; flex-wrap: wrap; gap: 20px; }
+#account .two .card { flex: 1 1 300px; }
+#account .two button, #account .full button { width: 100%; margin-top: 15px; padding: 12px; }
+#account input { width: 100%; margin-top: 5px; }
+#adminPanel, #studentPanel, #loggedIn { display: none; }
+.total { font-weight: bold; color: #dc2626; margin-bottom: 12px; font-size: 1.1rem; }
+
+/* ---------- Toast message ---------- */
+#toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+         background: #16a34a; color: white; padding: 12px 24px; border-radius: 6px;
+         display: none; z-index: 20; font-weight: bold; }
+#toast.bad { background: #dc2626; }
+
+/* ---------- Footer ---------- */
+footer { background: #14213d; color: #cbd5e1; }
+footer .cols { display: flex; flex-wrap: wrap; gap: 30px; justify-content: space-between;
+               max-width: 1100px; margin: 0 auto; padding: 40px 15px; }
+footer .cols div { flex: 1 1 200px; }
+footer h4 { color: #fbbf24; margin-bottom: 10px; }
+footer a { display: block; color: #cbd5e1; text-decoration: none; margin: 6px 0; }
+footer a:hover { color: white; }
+footer .copy { text-align: center; padding: 15px; background: #0f172a; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- ============ NAVIGATION ============ -->
+<nav>
+  <span class="logo">City Library</span>
+  <a href="#home">Home</a>
+  <a href="#books">Books</a>
+  <a href="#materials">Study Material</a>
+  <a href="#account" id="accLink">Login</a>
+  <span class="user" id="userLabel"></span>
+  <a href="#" id="logoutLink" style="display:none" onclick="logout(); return false;">Logout</a>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section id="home">
+  <div class="wrap">
+    <h1>Your Campus Library, Online</h1>
+    <p>Search books, track what you borrowed, check fines and download study material.</p>
+    <a class="btn gold" href="#books">Browse Books</a>
+    <a class="btn light" href="#account">Login / Register</a>
+  </div>
+</section>
+
+<div class="perks">
+  <span>14-day loan period</span>
+  <span>Fine: Rs. 5 per late day</span>
+  <span>Study material by year and semester</span>
+</div>
+
+<!-- ============ BOOKS (search and catalogue) ============ -->
+<section id="books">
+  <div class="wrap">
+    <h2 class="title">Book Catalogue</h2>
+    <p class="subtitle">Search by title, author or category. Availability updates as books are issued.</p>
+    <div class="row">
+      <input type="text" id="search" placeholder="Search books..." oninput="renderBooks()">
+      <select id="cat" onchange="renderBooks()"></select>
+    </div>
+    <div id="bookTable"></div>
+  </div>
+</section>
+
+<!-- ============ STUDY MATERIAL ============ -->
+<section id="materials">
+  <div class="wrap">
+    <h2 class="title">Study Material</h2>
+    <p class="subtitle">Filter by year and semester, then download.</p>
+    <div class="row">
+      <select id="mYear" onchange="renderMaterials()">
+        <option value="">All years</option>
+        <option>1</option><option>2</option><option>3</option><option>4</option>
+      </select>
+      <select id="mSem" onchange="renderMaterials()">
+        <option value="">All semesters</option>
+        <option>1</option><option>2</option><option>3</option><option>4</option>
+        <option>5</option><option>6</option><option>7</option><option>8</option>
+      </select>
+    </div>
+    <div id="matTable"></div>
+  </div>
+</section>
+
+<!-- ============ ACCOUNT (login, register, dashboards) ============ -->
+<section id="account">
+  <div class="wrap">
+    <h2 class="title" id="accTitle">Login or Register</h2>
+    <p class="subtitle" id="accSub">Demo: admin / admin123 (librarian) or student / student123</p>
+
+    <!-- Logged out: login + register -->
+    <div id="loggedOut" class="two">
+      <form class="card" id="loginForm" onsubmit="return doLogin();">
+        <h3>Login</h3>
+        <label>Username</label><input type="text" id="lUser" required>
+        <label>Password</label><input type="password" id="lPass" required>
+        <button type="submit">Login</button>
+      </form>
+
+      <form class="card" id="regForm" onsubmit="return doRegister();">
+        <h3>Student Registration</h3>
+        <label>Full name</label><input type="text" id="rName" required>
+        <label>Department</label><input type="text" id="rDept" required>
+        <label>Username (min 3 letters)</label><input type="text" id="rUser" required>
+        <label>Password (min 6 characters)</label><input type="password" id="rPass" required>
+        <button type="submit">Register</button>
+      </form>
+    </div>
+
+    <!-- Logged in -->
+    <div id="loggedIn">
+
+      <!-- Librarian admin panel -->
+      <div id="adminPanel">
+        <div class="card">
+          <h3>Add Book</h3>
+          <form class="row" onsubmit="return addBook();">
+            <input type="text" id="bTitle" placeholder="Title" required>
+            <input type="text" id="bAuthor" placeholder="Author" required>
+            <input type="text" id="bCat" placeholder="Category" required>
+            <input type="number" id="bCopies" min="1" value="1" required>
+            <button type="submit">Add Book</button>
+          </form>
+          <p class="hint">Use Edit and Delete in the Book Catalogue above to update or remove books.</p>
+        </div>
+
+        <div class="card">
+          <h3>Issue Book to Student</h3>
+          <form class="row" onsubmit="return issueBook();">
+            <select id="issUser"></select>
+            <select id="issBook"></select>
+            <button type="submit">Issue Book</button>
+          </form>
+          <p class="hint">Loan period 14 days. Fine is Rs. 5 for each day after the due date.</p>
+        </div>
+
+        <div class="card">
+          <h3>Issued Books and Returns</h3>
+          <div id="issueTable"></div>
+        </div>
+
+        <div class="card">
+          <h3>Add Study Material</h3>
+          <form onsubmit="return addMaterial();">
+            <div class="row">
+              <input type="text" id="mTitle" placeholder="Material title" required>
+              <select id="mAddYear"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+              <select id="mAddSem"><option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6</option><option>7</option><option>8</option></select>
+            </div>
+            <div class="row"><textarea id="mText" rows="3" placeholder="Material content" required></textarea></div>
+            <button type="submit">Add Material</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Student panel -->
+      <div id="studentPanel">
+        <div class="card">
+          <h3>My Borrowing History</h3>
+          <div class="total" id="myFine"></div>
+          <div id="myTable"></div>
+        </div>
+      </div>
+
+      <!-- Profile (both) -->
+      <form class="card full" onsubmit="return saveProfile();">
+        <h3>My Profile</h3>
+        <label>Username</label><input type="text" id="pUser" disabled>
+        <label>Full name</label><input type="text" id="pName" required>
+        <label>Department</label><input type="text" id="pDept" required>
+        <button type="submit">Save Profile</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="cols">
+    <div><h4>City Library</h4><p>Books and study material for every student.</p></div>
+    <div><h4>Quick Links</h4><a href="#home">Home</a><a href="#books">Books</a><a href="#materials">Study Material</a><a href="#account">Login</a></div>
+    <div><h4>Contact</h4><p>library@college.edu</p><p>Chennai, Tamil Nadu</p></div>
+  </div>
+  <div class="copy">Copyright 2026 City Library. Internet Programming Lab - SIMATS Engineering</div>
+</footer>
+
+<div id="toast"></div>
+
+<!-- ============ SCRIPT: DATA AND HELPERS ============ -->
+<script>
+var FINE = 5;      // Rs. per late day
+var DAYS = 14;     // loan period in days
+
+function load(key, def) {
+  var s = localStorage.getItem(key);
+  return s ? JSON.parse(s) : def;
+}
+
+var users = load("lib_users", [
+  { u: "admin", n: "Head Librarian", p: "admin123", role: "admin", dept: "Library" },
+  { u: "student", n: "Demo Student", p: "student123", role: "user", dept: "CSE" }
+]);
+
+var books = load("lib_books", [
+  { id: "B1", title: "Introduction to Algorithms", author: "Cormen", cat: "Computer Science", copies: 3 },
+  { id: "B2", title: "Clean Code", author: "Robert Martin", cat: "Computer Science", copies: 2 },
+  { id: "B3", title: "Database System Concepts", author: "Silberschatz", cat: "Computer Science", copies: 2 },
+  { id: "B4", title: "Engineering Mathematics", author: "B.S. Grewal", cat: "Mathematics", copies: 4 },
+  { id: "B5", title: "Digital Electronics", author: "Morris Mano", cat: "Electronics", copies: 2 },
+  { id: "B6", title: "Wings of Fire", author: "A.P.J. Abdul Kalam", cat: "Biography", copies: 3 },
+  { id: "B7", title: "Operating System Concepts", author: "Galvin", cat: "Computer Science", copies: 2 },
+  { id: "B8", title: "Physics for Engineers", author: "Halliday", cat: "Physics", copies: 3 }
+]);
+
+var issues = load("lib_issues", []);
+
+var mats = load("lib_mats", [
+  { id: "M1", title: "Data Structures Notes", year: "2", sem: "3", text: "Arrays, linked lists, stacks, queues, trees and graphs." },
+  { id: "M2", title: "DBMS Question Bank", year: "2", sem: "4", text: "ER model, normalization, SQL queries and transactions." },
+  { id: "M3", title: "Internet Programming Lab Manual", year: "3", sem: "5", text: "HTML, CSS layout and JavaScript validation experiments." }
+]);
+
+function save() {
+  localStorage.setItem("lib_users", JSON.stringify(users));
+  localStorage.setItem("lib_books", JSON.stringify(books));
+  localStorage.setItem("lib_issues", JSON.stringify(issues));
+  localStorage.setItem("lib_mats", JSON.stringify(mats));
+}
+save();
+
+var me = null;
+var savedName = localStorage.getItem("lib_me");
+for (var k = 0; k < users.length; k++) {
+  if (users[k].u === savedName) { me = users[k]; }
+}
+
+function isAdmin() { return me && me.role === "admin"; }
+function val(id) { return document.getElementById(id).value; }
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function today() { return new Date().toISOString().slice(0, 10); }
+
+function addDays(d, n) {
+  return new Date(new Date(d).getTime() + n * 86400000).toISOString().slice(0, 10);
+}
+
+function lateDays(due, ret) {
+  var end = ret ? new Date(ret) : new Date(today());
+  var diff = Math.floor((end - new Date(due)) / 86400000);
+  return diff > 0 ? diff : 0;
+}
+
+function avail(b) {
+  var out = 0;
+  for (var i = 0; i < issues.length; i++) {
+    if (issues[i].b === b.id && !issues[i].ret) { out++; }
+  }
+  return b.copies - out;
+}
+
+function bookTitle(id) {
+  for (var i = 0; i < books.length; i++) {
+    if (books[i].id === id) { return books[i].title; }
+  }
+  return "(deleted book)";
+}
+
+function showMsg(text, bad) {
+  var t = document.getElementById("toast");
+  t.innerHTML = text;
+  t.className = bad ? "bad" : "";
+  t.style.display = "block";
+  setTimeout(function () { t.style.display = "none"; }, 2600);
+}
+</script>
+
+<!-- ============ SCRIPT: BOOKS (search, edit, delete, add) ============ -->
+<script>
+function fillCats() {
+  var chosen = val("cat");
+  var seen = {};
+  var html = "<option value=''>All categories</option>";
+  for (var i = 0; i < books.length; i++) {
+    if (!seen[books[i].cat]) {
+      seen[books[i].cat] = true;
+      html += "<option>" + esc(books[i].cat) + "</option>";
+    }
+  }
+  document.getElementById("cat").innerHTML = html;
+  document.getElementById("cat").value = chosen;
+}
+
+function renderBooks() {
+  var q = val("search").toLowerCase();
+  var c = val("cat");
+  var html = "<div class='scroll'><table><tr><th>Title</th><th>Author</th><th>Category</th><th>Available</th>";
+  if (isAdmin()) { html += "<th>Actions</th>"; }
+  html += "</tr>";
+  var count = 0;
+  for (var i = 0; i < books.length; i++) {
+    var b = books[i];
+    if (c && b.cat !== c) { continue; }
+    if ((b.title + " " + b.author + " " + b.cat).toLowerCase().indexOf(q) === -1) { continue; }
+    count++;
+    var a = avail(b);
+    html += "<tr><td>" + esc(b.title) + "</td><td>" + esc(b.author) + "</td><td>" + esc(b.cat) + "</td>";
+    html += "<td><span class='pill " + (a > 0 ? "ok" : "no") + "'>" + a + " / " + b.copies + "</span></td>";
+    if (isAdmin()) {
+      html += "<td><button onclick=\"editBook('" + b.id + "')\">Edit</button> ";
+      html += "<button class='danger' onclick=\"deleteBook('" + b.id + "')\">Delete</button></td>";
+    }
+    html += "</tr>";
+  }
+  html += "</table></div>";
+  document.getElementById("bookTable").innerHTML = count ? html : "<p class='empty'>No books found.</p>";
+}
+
+function addBook() {
+  books.push({
+    id: "B" + Date.now(),
+    title: val("bTitle").trim(), author: val("bAuthor").trim(),
+    cat: val("bCat").trim(), copies: parseInt(val("bCopies"), 10)
+  });
+  save();
+  document.getElementById("bTitle").value = "";
+  document.getElementById("bAuthor").value = "";
+  document.getElementById("bCat").value = "";
+  renderAll();
+  showMsg("Book added");
+  return false;
+}
+
+function editBook(id) {
+  for (var i = 0; i < books.length; i++) {
+    if (books[i].id === id) {
+      var t = prompt("Book title", books[i].title);
+      if (t === null) { return; }
+      var c = parseInt(prompt("Total copies", books[i].copies), 10);
+      if (t.trim() === "" || !(c > 0)) { showMsg("Invalid values", true); return; }
+      books[i].title = t.trim();
+      books[i].copies = c;
+      save(); renderAll(); showMsg("Book updated");
+    }
+  }
+}
+
+function deleteBook(id) {
+  if (!confirm("Delete this book?")) { return; }
+  var keep = [];
+  for (var i = 0; i < books.length; i++) {
+    if (books[i].id !== id) { keep.push(books[i]); }
+  }
+  books = keep;
+  save(); renderAll(); showMsg("Book deleted");
+}
+</script>
+
+<!-- ============ SCRIPT: LOGIN, REGISTER, LOGOUT, PROFILE ============ -->
+<script>
+function doLogin() {
+  var u = val("lUser").trim();
+  var p = val("lPass");
+  for (var i = 0; i < users.length; i++) {
+    if (users[i].u === u && users[i].p === p) {
+      me = users[i];
+      localStorage.setItem("lib_me", u);
+      document.getElementById("loginForm").reset();
+      renderAll();
+      showMsg("Welcome, " + me.n);
+      return false;
+    }
+  }
+  showMsg("Wrong username or password", true);
+  return false;
+}
+
+function doRegister() {
+  var u = val("rUser").trim();
+  if (u.length < 3) { showMsg("Username must have at least 3 letters", true); return false; }
+  if (val("rPass").length < 6) { showMsg("Password must have at least 6 characters", true); return false; }
+  for (var i = 0; i < users.length; i++) {
+    if (users[i].u === u) { showMsg("Username already taken", true); return false; }
+  }
+  users.push({ u: u, n: val("rName").trim(), p: val("rPass"), role: "user", dept: val("rDept").trim() });
+  save();
+  document.getElementById("regForm").reset();
+  showMsg("Registered successfully. Please login.");
+  return false;
+}
+
+function logout() {
+  me = null;
+  localStorage.removeItem("lib_me");
+  renderAll();
+  showMsg("Logged out");
+}
+
+function saveProfile() {
+  me.n = val("pName").trim();
+  me.dept = val("pDept").trim();
+  save(); renderAll();
+  showMsg("Profile saved");
+  return false;
+}
+</script>
+
+<!-- ============ SCRIPT: ISSUE, RETURN, FINE, MY BORROWING ============ -->
+<script>
+function fillIssueSelects() {
+  var s = "", i;
+  for (i = 0; i < users.length; i++) {
+    if (users[i].role === "user") {
+      s += "<option value='" + esc(users[i].u) + "'>" + esc(users[i].n) + " (" + esc(users[i].u) + ")</option>";
+    }
+  }
+  document.getElementById("issUser").innerHTML = s;
+  s = "";
+  for (i = 0; i < books.length; i++) {
+    if (avail(books[i]) > 0) { s += "<option value='" + books[i].id + "'>" + esc(books[i].title) + "</option>"; }
+  }
+  document.getElementById("issBook").innerHTML = s;
+}
+
+function issueTable(list, admin) {
+  if (list.length === 0) { return "<p class='empty'>No records yet.</p>"; }
+  var html = "<div class='scroll'><table><tr>" + (admin ? "<th>Student</th>" : "");
+  html += "<th>Book</th><th>Issue Date</th><th>Due Date</th><th>Status</th><th>Fine</th>" + (admin ? "<th></th>" : "") + "</tr>";
+  for (var i = 0; i < list.length; i++) {
+    var r = list[i];
+    var late = lateDays(r.due, r.ret);
+    var status;
+    if (r.ret) { status = "<span class='pill ok'>Returned " + r.ret + "</span>"; }
+    else if (late > 0) { status = "<span class='pill no'>Overdue " + late + " days</span>"; }
+    else { status = "<span class='pill warn'>Issued</span>"; }
+    html += "<tr>" + (admin ? "<td>" + esc(r.user) + "</td>" : "");
+    html += "<td>" + esc(bookTitle(r.b)) + "</td><td>" + r.issue + "</td><td>" + r.due + "</td><td>" + status + "</td>";
+    html += "<td>Rs. " + (late * FINE) + "</td>";
+    if (admin) {
+      html += "<td>" + (r.ret ? "" : "<button onclick=\"returnBook('" + r.id + "')\">Return</button>") + "</td>";
+    }
+    html += "</tr>";
+  }
+  return html + "</table></div>";
+}
+
+function issueBook() {
+  var u = val("issUser");
+  var b = val("issBook");
+  if (!u || !b) { showMsg("Select a student and an available book", true); return false; }
+  for (var i = 0; i < issues.length; i++) {
+    if (issues[i].user === u && issues[i].b === b && !issues[i].ret) {
+      showMsg("This student already has this book", true);
+      return false;
+    }
+  }
+  issues.push({ id: "I" + Date.now(), user: u, b: b, issue: today(), due: addDays(today(), DAYS), ret: null });
+  save(); renderAll();
+  showMsg("Book issued. Due date: " + addDays(today(), DAYS));
+  return false;
+}
+
+function returnBook(id) {
+  for (var i = 0; i < issues.length; i++) {
+    if (issues[i].id === id) {
+      issues[i].ret = today();
+      var fine = lateDays(issues[i].due, issues[i].ret) * FINE;
+      save(); renderAll();
+      showMsg(fine > 0 ? "Returned late. Fine: Rs. " + fine : "Returned on time. No fine");
+    }
+  }
+}
+
+function renderMine() {
+  var mine = [], total = 0;
+  for (var i = issues.length - 1; i >= 0; i--) {
+    if (issues[i].user === me.u) {
+      mine.push(issues[i]);
+      total += lateDays(issues[i].due, issues[i].ret) * FINE;
+    }
+  }
+  document.getElementById("myFine").innerHTML = "Total fine: Rs. " + total;
+  document.getElementById("myTable").innerHTML = issueTable(mine, false);
+}
+</script>
+
+<!-- ============ SCRIPT: STUDY MATERIAL ============ -->
+<script>
+function renderMaterials() {
+  var y = val("mYear");
+  var s = val("mSem");
+  var html = "<div class='scroll'><table><tr><th>Title</th><th>Year</th><th>Semester</th><th></th></tr>";
+  var count = 0;
+  for (var i = 0; i < mats.length; i++) {
+    var m = mats[i];
+    if (y && m.year !== y) { continue; }
+    if (s && m.sem !== s) { continue; }
+    count++;
+    html += "<tr><td>" + esc(m.title) + "</td><td>" + m.year + "</td><td>" + m.sem + "</td><td>";
+    html += "<button onclick=\"downloadMat('" + m.id + "')\">Download</button>";
+    if (isAdmin()) { html += " <button class='danger' onclick=\"deleteMat('" + m.id + "')\">Delete</button>"; }
+    html += "</td></tr>";
+  }
+  html += "</table></div>";
+  document.getElementById("matTable").innerHTML = count ? html : "<p class='empty'>No material found.</p>";
+}
+
+function addMaterial() {
+  mats.push({ id: "M" + Date.now(), title: val("mTitle").trim(), year: val("mAddYear"), sem: val("mAddSem"), text: val("mText").trim() });
+  save();
+  document.getElementById("mTitle").value = "";
+  document.getElementById("mText").value = "";
+  renderAll();
+  showMsg("Material added");
+  return false;
+}
+
+function deleteMat(id) {
+  var keep = [];
+  for (var i = 0; i < mats.length; i++) {
+    if (mats[i].id !== id) { keep.push(mats[i]); }
+  }
+  mats = keep;
+  save(); renderAll(); showMsg("Material deleted");
+}
+
+function downloadMat(id) {
+  for (var i = 0; i < mats.length; i++) {
+    if (mats[i].id === id) {
+      var m = mats[i];
+      var text = m.title + "\nYear " + m.year + ", Semester " + m.sem + "\n\n" + m.text + "\n";
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+      a.download = m.title.replace(/[^A-Za-z0-9]+/g, "_") + ".txt";
+      a.click();
+    }
+  }
+}
+</script>
+
+<!-- ============ SCRIPT: SCREEN UPDATE (runs everything) ============ -->
+<script>
+function renderAccount() {
+  var out = document.getElementById("loggedOut");
+  var inn = document.getElementById("loggedIn");
+  var label = document.getElementById("userLabel");
+  if (!me) {
+    out.style.display = "flex";
+    inn.style.display = "none";
+    label.style.display = "none";
+    document.getElementById("logoutLink").style.display = "none";
+    document.getElementById("accLink").innerHTML = "Login";
+    document.getElementById("accTitle").innerHTML = "Login or Register";
+    document.getElementById("accSub").innerHTML = "Demo: admin / admin123 (librarian) or student / student123";
+    return;
+  }
+  out.style.display = "none";
+  inn.style.display = "block";
+  label.style.display = "inline-block";
+  label.innerHTML = me.n + (isAdmin() ? " (Librarian)" : " (Student)");
+  document.getElementById("logoutLink").style.display = "inline-block";
+  document.getElementById("accLink").innerHTML = "Dashboard";
+  document.getElementById("accTitle").innerHTML = isAdmin() ? "Librarian Dashboard" : "My Dashboard";
+  document.getElementById("accSub").innerHTML = "Welcome, " + esc(me.n);
+  document.getElementById("adminPanel").style.display = isAdmin() ? "block" : "none";
+  document.getElementById("studentPanel").style.display = isAdmin() ? "none" : "block";
+  document.getElementById("pUser").value = me.u;
+  document.getElementById("pName").value = me.n;
+  document.getElementById("pDept").value = me.dept;
+  if (isAdmin()) {
+    fillIssueSelects();
+    document.getElementById("issueTable").innerHTML = issueTable(issues.slice().reverse(), true);
+  } else {
+    renderMine();
+  }
+}
+
+function renderAll() {
+  fillCats();
+  renderBooks();
+  renderMaterials();
+  renderAccount();
+}
+
+renderAll();
+</script>
+
+</body>
+</html>
