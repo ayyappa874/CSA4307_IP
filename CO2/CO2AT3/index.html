@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSA43 CO-2 Assessment Tool 3 - Short Answer Test</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: Arial, sans-serif; background: #f0f4f8; color: #1f2937; line-height: 1.6; }
+section { scroll-margin-top: 60px; }
+.wrap { max-width: 1000px; margin: 0 auto; padding: 30px 15px; }
+.hero { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; text-align: center; padding: 40px 15px; }
+.hero h1 { font-size: 1.8rem; margin-bottom: 8px; }
+.bar { background: #1e3a8a; position: sticky; top: 0; z-index: 10; display: flex; overflow-x: auto; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+.bar a { color: white; padding: 13px 16px; text-decoration: none; }
+.bar a:hover { background: #3b82f6; }
+.q { background: white; border-radius: 10px; padding: 22px; margin-bottom: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+.q h2 { color: #1e3a8a; font-size: 1.3rem; }
+.mark { display: inline-block; background: #f59e0b; color: white; font-size: 13px; padding: 2px 12px; border-radius: 20px; margin: 4px 0 8px; }
+.q h4 { color: #1e3a8a; margin: 12px 0 3px; }
+.q ul { margin-left: 22px; }
+.scenario { background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 14px; border-radius: 4px; margin: 8px 0; font-style: italic; }
+pre { background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 6px; overflow-x: auto; font-size: 13px; margin: 8px 0; }
+.demo { background: #f8fafc; border: 2px dashed #93c5fd; border-radius: 8px; padding: 16px; margin: 12px 0; }
+.demo-t { font-weight: bold; color: #1e3a8a; margin-bottom: 8px; }
+input { padding: 9px; border: 2px solid #ccc; border-radius: 5px; font-size: 16px; width: 100%; max-width: 320px; margin: 4px 0; }
+input.good { border-color: #16a34a; }
+input.bad { border-color: #dc2626; }
+button { padding: 10px 18px; background: #2563eb; color: white; border: none; border-radius: 5px; font-size: 15px; cursor: pointer; }
+button:hover { background: #1e3a8a; }
+.err { color: #dc2626; font-size: 14px; min-height: 20px; }
+.okmsg { color: #16a34a; font-weight: bold; margin-top: 8px; }
+code { background: #e5e7eb; padding: 1px 5px; border-radius: 3px; font-size: 0.92em; }
+
+/* ---------- Q1 and Q5: responsive demo layout ---------- */
+.lay { display: grid; gap: 10px; grid-template-columns: 1fr; }
+.lay div { padding: 18px; color: white; font-weight: bold; text-align: center; border-radius: 6px; }
+.lay div:nth-child(1) { background: #2563eb; } .lay div:nth-child(2) { background: #0f766e; }
+.lay div:nth-child(3) { background: #f59e0b; } .lay div:nth-child(4) { background: #7c3aed; }
+@media (min-width: 600px) { .lay { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 992px) { .lay { grid-template-columns: repeat(4, 1fr); } }
+
+/* ---------- Q3: box model ---------- */
+.bm { display: inline-block; background: #fdba74; padding: 20px; text-align: center; }
+.bm .b { background: #1f2937; padding: 6px; } .bm .p { background: #86efac; padding: 20px; }
+.bm .c { background: #93c5fd; padding: 14px; color: #1f2937; }
+
+/* ---------- Q4: DOM list ---------- */
+#list { list-style: none; margin: 10px 0; }
+#list li { background: white; border: 1px solid #cbd5e1; padding: 8px 12px; margin-bottom: 6px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+#list button { background: #dc2626; padding: 4px 10px; font-size: 13px; }
+
+/* ---------- Q6: card styling ---------- */
+.two { display: flex; flex-wrap: wrap; gap: 20px; }
+.pc { flex: 1 1 220px; padding: 15px; }
+.plain { background: white; border: 1px solid black; }
+.styled { background: white; border: 1px solid #e2e8f0; border-top: 5px solid #f59e0b; border-radius: 12px; padding: 20px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-align: center; }
+.styled h3 { color: #1e3a8a; margin-bottom: 6px; }
+.styled .price { color: #16a34a; font-weight: bold; margin: 8px 0; }
+
+/* ---------- Q7: navigation fix ---------- */
+.nb { background: #1e3a8a; display: flex; flex-wrap: wrap; border-radius: 6px; }
+.nb a { color: white; padding: 12px 16px; text-decoration: none; flex: 1 1 auto; text-align: center; }
+.nb a:hover { background: #3b82f6; }
+
+/* ---------- Q10: price ---------- */
+.total { font-size: 1.3rem; font-weight: bold; color: #1e3a8a; margin-top: 8px; }
+
+footer { background: #14213d; color: #cbd5e1; text-align: center; padding: 20px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Internet Programming (CSA43) - Assessment Tool 3: Short Answer Test</h1>
+  <p>CO-2: CSS layout and JavaScript interaction | Name / Reg No: ____________________</p>
+</div>
+<nav class="bar">
+  <a href="#q1">Q1</a><a href="#q2">Q2</a><a href="#q3">Q3</a><a href="#q4">Q4</a><a href="#q5">Q5</a>
+  <a href="#q6">Q6</a><a href="#q7">Q7</a><a href="#q8">Q8</a><a href="#q9">Q9</a><a href="#q10">Q10</a>
+</nav>
+
+<div class="wrap">
+
+<!-- ============ Q1 ============ -->
+<section id="q1" class="q">
+  <h2>Question 1: Responsive Web Design</h2><span class="mark">5 marks</span>
+  <h4>Concept</h4>
+  <p>Responsive web design (RWD) makes one website adapt its layout, images and text to any screen size, so the same code works on mobile, tablet and desktop.</p>
+  <h4>Importance</h4>
+  <ul><li>Most users browse on phones, so a fixed desktop layout is unusable for them.</li>
+  <li>One site is cheaper to build and maintain than separate mobile and desktop sites.</li>
+  <li>Better user experience, higher conversions and better search ranking.</li></ul>
+  <h4>Key CSS techniques</h4>
+  <ul><li><b>Viewport meta tag</b> so phones use their real width.</li>
+  <li><b>Fluid layouts</b> using %, <code>fr</code>, <code>rem</code> and <code>max-width</code> instead of fixed pixels.</li>
+  <li><b>Flexible images</b>: <code>max-width: 100%; height: auto;</code></li>
+  <li><b>Media queries</b> to change the layout at breakpoints (600 px, 992 px).</li>
+  <li><b>Flexbox or Grid</b> for layout, with a mobile-first approach.</li></ul>
+  <h4>Flexbox or Grid for adaptive layouts</h4>
+  <p><b>Flexbox</b> arranges items in one row or column and wraps them (<code>flex-wrap</code>). <b>Grid</b> defines rows and columns together; <code>repeat(auto-fit, minmax(200px, 1fr))</code> changes the number of columns by itself.</p>
+  <h4>Example layout</h4>
+<pre>.lay { display: grid; gap: 10px; grid-template-columns: 1fr; }                    /* mobile: 1 column */
+@media (min-width: 600px) { .lay { grid-template-columns: repeat(2, 1fr); } }   /* tablet: 2 */
+@media (min-width: 992px) { .lay { grid-template-columns: repeat(4, 1fr); } }   /* desktop: 4 */</pre>
+  <div class="demo"><div class="demo-t">Live: resize the window (1, 2 or 4 columns)</div>
+    <div class="lay"><div>Box 1</div><div>Box 2</div><div>Box 3</div><div>Box 4</div></div></div>
+  <h4>Improvements for user experience</h4>
+  <p>Use larger tap targets (44 px) on phones, compressed and lazy-loaded images (<code>srcset</code>), readable font sizes with <code>clamp()</code>, a hamburger menu, and test on real devices.</p>
+</section>
+
+<!-- ============ Q2 ============ -->
+<section id="q2" class="q">
+  <h2>Question 2: Client-Side Validation</h2><span class="mark">5 marks</span>
+  <h4>Concept and purpose</h4>
+  <p>Client-side validation checks form input in the browser, before it is sent to the server. It gives instant feedback, reduces server load and prevents obvious mistakes such as an invalid email.</p>
+  <h4>JavaScript event handling in validation</h4>
+  <p>Events trigger the checks: <code>input</code> (validate while typing), <code>blur</code> (when leaving a field) and <code>submit</code> (final check; <code>event.preventDefault()</code> stops sending if invalid).</p>
+  <h4>Role of regular expressions</h4>
+  <p>A regular expression describes the allowed pattern of text. <code>regex.test(value)</code> returns true or false. Email needs <code>name@domain.ext</code>; an Indian mobile number is exactly 10 digits starting with 6 to 9.</p>
+<pre>var emailRe = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+var phoneRe = /^[6-9][0-9]{9}$/;
+email.addEventListener("input", function () {
+  if (emailRe.test(email.value)) { error.innerHTML = ""; } else { error.innerHTML = "Invalid email"; }
+});</pre>
+  <div class="demo"><div class="demo-t">Live example (errors appear as you type)</div>
+    <input type="text" id="e2" placeholder="Email"><div class="err" id="e2err"></div>
+    <input type="text" id="p2" placeholder="Phone (10 digits)" maxlength="10"><div class="err" id="p2err"></div></div>
+  <h4>Improvements</h4>
+  <p><b>Usability:</b> clear error text, green and red borders, <code>type="email"</code> and <code>type="tel"</code> keyboards, error messages linked with <code>aria-describedby</code>. <b>Security:</b> client-side checks can be bypassed, so always validate again on the server, sanitise input and use HTTPS.</p>
+</section>
+
+<!-- ============ Q3 ============ -->
+<section id="q3" class="q">
+  <h2>Question 3: Box Model, Positioning and Breaking Layouts</h2><span class="mark">5 marks</span>
+  <h4>CSS box model</h4>
+  <p>Every element is a rectangle made of four layers, from inside to outside: <b>content</b> (text or image), <b>padding</b> (space inside the border), <b>border</b>, and <b>margin</b> (space outside).</p>
+  <div class="demo"><div class="bm">margin<div class="b"><div class="p"><div class="c">content</div></div></div></div>
+    <p style="margin-top:6px;font-size:14px">Orange = margin, black = border, green = padding, blue = content</p></div>
+  <h4>Positioning and layout structure</h4>
+  <ul><li><code>static</code>: normal flow (default).</li>
+  <li><code>relative</code>: shifted from its normal place, still keeps its space; anchor for children.</li>
+  <li><code>absolute</code>: removed from the flow and placed against the nearest positioned parent. Other elements ignore it, so overlap can happen.</li>
+  <li><code>fixed</code> stays on screen while scrolling; <code>sticky</code> sticks after a scroll point.</li></ul>
+  <h4>Causes of layout breaking</h4>
+  <ul><li>Fixed pixel widths and heights.</li>
+  <li>Absolute positioning used for page structure.</li>
+  <li>Padding and border added to width (<code>content-box</code>), so totals exceed 100%.</li>
+  <li>Floats that are not cleared, negative margins, missing media queries.</li></ul>
+  <h4>Fixing with media queries and best practices</h4>
+<pre>* { box-sizing: border-box; }                      /* padding and border stay inside width */
+.container { display: flex; flex-wrap: wrap; gap: 10px; }
+.sidebar { flex: 1 1 200px; }
+.main    { flex: 3 1 350px; }
+@media (max-width: 600px) { .container { flex-direction: column; } }   /* stack on phones */</pre>
+  <p><b>Best practices:</b> use <code>border-box</code>; use Flexbox or Grid, not absolute positioning, for structure; use <code>%</code>, <code>rem</code>, <code>min-height</code> and <code>max-width</code> instead of fixed sizes; design mobile-first; test at many widths.</p>
+</section>
+
+<!-- ============ Q4 ============ -->
+<section id="q4" class="q">
+  <h2>Question 4: DOM and Dynamic Content</h2><span class="mark">5 marks</span>
+  <h4>Document Object Model (DOM)</h4>
+  <p>The DOM is a tree of objects that the browser builds from the HTML page. Each tag becomes a node that JavaScript can read and change. It connects the page to JavaScript and makes pages interactive.</p>
+  <h4>Updating the page without reloading</h4>
+  <p>JavaScript finds elements (<code>getElementById</code>, <code>querySelector</code>), then changes them (<code>textContent</code>, <code>classList</code>, <code>createElement</code>, <code>appendChild</code>, <code>removeChild</code>). Only that part of the page is redrawn; no reload is needed.</p>
+<pre>var li = document.createElement("li");
+li.textContent = input.value;
+list.appendChild(li);                 // new item appears instantly</pre>
+  <div class="demo"><div class="demo-t">Live example: add and remove items</div>
+    <input type="text" id="item" placeholder="Type an item"> <button id="addBtn">Add</button>
+    <ul id="list"></ul><div>Items: <b id="count">0</b></div></div>
+  <h4>Improvements</h4>
+  <p>Use <code>textContent</code> instead of <code>innerHTML</code> for user text (prevents XSS), event delegation (one listener on the list), <code>DocumentFragment</code> or batch updates for many items, and show loading and success messages.</p>
+</section>
+
+<!-- ============ Q5 ============ -->
+<section id="q5" class="q">
+  <h2>Question 5: Responsive Layout for a College Website</h2><span class="mark">5 marks</span>
+  <div class="scenario">A college website must display properly on desktops, tablets and mobile phones.</div>
+  <ul><li>Add <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code>.</li>
+  <li>Use <b>flexible layouts</b>: Flexbox with <code>flex-wrap</code> and widths in %, <code>fr</code> or <code>flex: 1 1 250px</code>; images with <code>max-width: 100%</code>.</li>
+  <li>Use <b>mobile-first media queries</b>: one column by default, two columns at 600 px (tablet), sidebar and three columns at 992 px (desktop).</li></ul>
+<pre>.page { display: flex; flex-wrap: wrap; gap: 15px; }
+.box  { flex: 1 1 100%; }                                /* mobile */
+@media (min-width: 600px) { .box { flex: 1 1 45%; } }    /* tablet */
+@media (min-width: 992px) { .box { flex: 1 1 30%; } }    /* desktop */</pre>
+  <p>The live layout in Question 1 follows this same method. Departments, news and notices appear as stacked boxes on phones and as a multi-column grid on large screens.</p>
+</section>
+
+<!-- ============ Q6 ============ -->
+<section id="q6" class="q">
+  <h2>Question 6: CSS Styling of Product Cards</h2><span class="mark">5 marks</span>
+  <div class="scenario">An online shopping website has plain product cards.</div>
+  <ul><li><b>Colors:</b> brand blue for titles, green for the price, a gold accent bar.</li>
+  <li><b>Borders:</b> light grey border, rounded corners (<code>border-radius</code>) and a coloured top border.</li>
+  <li><b>Shadows:</b> <code>box-shadow</code> gives depth and separates the card from the page.</li>
+  <li><b>Spacing:</b> <code>padding</code> inside the card and <code>gap</code> between cards for breathing room.</li></ul>
+<pre>.card { background: white; border: 1px solid #e2e8f0; border-top: 5px solid #f59e0b;
+        border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.card h3 { color: #1e3a8a; }   .price { color: #16a34a; font-weight: bold; }</pre>
+  <div class="two">
+    <div class="pc plain"><b>Before</b><br>Wireless Earbuds<br>Rs. 1,999</div>
+    <div class="pc styled"><b style="color:#6b7280">After</b><h3>Wireless Earbuds</h3><p>Noise-isolating, 20 h battery</p><p class="price">Rs. 1,999</p><button>Add to Cart</button></div>
+  </div>
+</section>
+
+<!-- ============ Q7 ============ -->
+<section id="q7" class="q">
+  <h2>Question 7: Navigation Menu Overlapping on Small Screens</h2><span class="mark">5 marks</span>
+  <div class="scenario">A navigation menu overlaps its content on smaller screens.</div>
+  <h4>Cause</h4>
+  <p>The menu uses fixed widths, a fixed height, <code>float</code> or <code>position: absolute</code>. Its items cannot wrap, so they overflow and cover the content below.</p>
+  <h4>Solution with CSS layout techniques</h4>
+  <ul><li>Make the menu a flex container with <code>flex-wrap: wrap</code>; each link uses <code>flex: 1 1 auto</code>.</li>
+  <li>Remove the fixed height (use padding) and keep the menu in the normal flow, not absolute.</li>
+  <li>On phones, stack links with <code>flex-direction: column</code> or use a hamburger menu.</li></ul>
+<pre>nav { display: flex; flex-wrap: wrap; }
+nav a { flex: 1 1 auto; padding: 12px 16px; text-align: center; }
+@media (max-width: 600px) { nav { flex-direction: column; } }</pre>
+  <div class="demo"><div class="demo-t">Fixed menu: wraps instead of overlapping (resize the window)</div>
+    <div class="nb"><a href="#q7">Home</a><a href="#q7">Courses</a><a href="#q7">Admissions</a><a href="#q7">Placements</a><a href="#q7">Contact</a></div>
+    <p style="margin-top:10px">This content stays below the menu at every width.</p></div>
+</section>
+
+<!-- ============ Q8 ============ -->
+<section id="q8" class="q">
+  <h2>Question 8: JavaScript Validation of Empty Fields</h2><span class="mark">5 marks</span>
+  <div class="scenario">A registration form accepts empty fields.</div>
+  <ul><li>Listen for the form's <code>submit</code> event and call <code>event.preventDefault()</code>.</li>
+  <li>Read each field's value, use <code>trim()</code> so spaces alone do not count, and check if it is empty.</li>
+  <li>Show an error under each empty field, and only continue when all fields are filled.</li></ul>
+<pre>form.addEventListener("submit", function (e) {
+  e.preventDefault();
+  var ok = true;
+  if (name.value.trim() === "") { nameErr.innerHTML = "Name is required"; ok = false; }
+  if (ok) { message.innerHTML = "Registered successfully!"; }
+});</pre>
+  <div class="demo"><div class="demo-t">Live: press Register with empty fields</div>
+    <form id="regForm"><input type="text" id="rn" placeholder="Full name"><div class="err" id="rnErr"></div>
+    <input type="text" id="re" placeholder="Email"><div class="err" id="reErr"></div>
+    <input type="password" id="rp" placeholder="Password"><div class="err" id="rpErr"></div>
+    <button type="submit">Register</button><div class="okmsg" id="rmsg"></div></form></div>
+</section>
+
+<!-- ============ Q9 ============ -->
+<section id="q9" class="q">
+  <h2>Question 9: Interactive Welcome Button</h2><span class="mark">5 marks</span>
+  <div class="scenario">An e-learning website requires a button that displays a welcome message when clicked.</div>
+  <ul><li>Create a button and an empty element to hold the message, each with an <code>id</code>.</li>
+  <li>Select them with <code>document.getElementById</code>.</li>
+  <li>Add a <code>click</code> event listener that sets the message with <code>textContent</code>.</li></ul>
+<pre>btn.addEventListener("click", function () {
+  msg.textContent = "Welcome to the E-Learning Portal, " + (nm.value.trim() || "Learner") + "!";
+});</pre>
+  <div class="demo"><div class="demo-t">Live example</div>
+    <input type="text" id="nm" placeholder="Your name (optional)"><br>
+    <button id="welBtn">Click for Welcome</button><div class="okmsg" id="welMsg"></div></div>
+</section>
+
+<!-- ============ Q10 ============ -->
+<section id="q10" class="q">
+  <h2>Question 10: Updating Total Price from Quantity</h2><span class="mark">5 marks</span>
+  <div class="scenario">A shopping website needs to update the total when the quantity changes.</div>
+  <ul><li>Store the unit price, and listen for the quantity field's <code>input</code> event.</li>
+  <li>Read the quantity with <code>parseInt</code>, and check it is a valid number of at least 1.</li>
+  <li>Calculate <code>total = price * quantity</code> and display it with <code>textContent</code>.</li></ul>
+<pre>var price = 499;
+qty.addEventListener("input", function () {
+  var q = parseInt(qty.value, 10);
+  if (isNaN(q) || q &lt; 1) { q = 1; }
+  total.textContent = "Rs. " + (price * q);
+});</pre>
+  <div class="demo"><div class="demo-t">Live example: Travel Backpack, Rs. 499 each</div>
+    <label for="qty">Quantity: </label><input type="number" id="qty" value="1" min="1" max="10" style="width:90px">
+    <div class="total">Total: <span id="total">Rs. 499</span></div></div>
+</section>
+
+</div>
+<footer>Internet Programming (CSA43) - Assessment Tool 3 | SIMATS Engineering | HTML, CSS, JavaScript</footer>
+
+<!-- ============ SCRIPT: Q2 EMAIL AND PHONE VALIDATION ============ -->
+<script>
+var emailRe = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+var phoneRe = /^[6-9][0-9]{9}$/;
+
+function check(input, regex, errBox, message) {
+  if (input.value === "") { errBox.innerHTML = ""; input.className = ""; return; }
+  if (regex.test(input.value)) { errBox.innerHTML = ""; input.className = "good"; }
+  else { errBox.innerHTML = message; input.className = "bad"; }
+}
+document.getElementById("e2").addEventListener("input", function () {
+  check(this, emailRe, document.getElementById("e2err"), "Enter a valid email like name@domain.com");
+});
+document.getElementById("p2").addEventListener("input", function () {
+  check(this, phoneRe, document.getElementById("p2err"), "Enter 10 digits starting with 6, 7, 8 or 9");
+});
+</script>
+
+<!-- ============ SCRIPT: Q4 DOM ADD AND REMOVE ============ -->
+<script>
+var itemInput = document.getElementById("item");
+var list = document.getElementById("list");
+var count = document.getElementById("count");
+
+function addItem() {
+  var text = itemInput.value.trim();
+  if (text === "") { itemInput.focus(); return; }
+  var li = document.createElement("li");
+  var span = document.createElement("span");
+  span.textContent = text;
+  var del = document.createElement("button");
+  del.textContent = "Remove";
+  li.appendChild(span);
+  li.appendChild(del);
+  list.appendChild(li);
+  itemInput.value = "";
+  count.textContent = list.children.length;
+}
+document.getElementById("addBtn").addEventListener("click", addItem);
+itemInput.addEventListener("keydown", function (e) { if (e.key === "Enter") { addItem(); } });
+list.addEventListener("click", function (e) {            // event delegation
+  if (e.target.tagName === "BUTTON") {
+    list.removeChild(e.target.parentNode);
+    count.textContent = list.children.length;
+  }
+});
+</script>
+
+<!-- ============ SCRIPT: Q8 EMPTY FIELD VALIDATION ============ -->
+<script>
+document.getElementById("regForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  var fields = [["rn", "rnErr", "Name is required"], ["re", "reErr", "Email is required"], ["rp", "rpErr", "Password is required"]];
+  var ok = true;
+  for (var i = 0; i < fields.length; i++) {
+    var input = document.getElementById(fields[i][0]);
+    var err = document.getElementById(fields[i][1]);
+    if (input.value.trim() === "") { err.innerHTML = fields[i][2]; input.className = "bad"; ok = false; }
+    else { err.innerHTML = ""; input.className = "good"; }
+  }
+  document.getElementById("rmsg").innerHTML = ok ? "Registered successfully!" : "";
+});
+</script>
+
+<!-- ============ SCRIPT: Q9 WELCOME BUTTON ============ -->
+<script>
+document.getElementById("welBtn").addEventListener("click", function () {
+  var name = document.getElementById("nm").value.trim();
+  document.getElementById("welMsg").textContent = "Welcome to the E-Learning Portal, " + (name || "Learner") + "!";
+});
+</script>
+
+<!-- ============ SCRIPT: Q10 TOTAL PRICE ============ -->
+<script>
+var price = 499;
+document.getElementById("qty").addEventListener("input", function () {
+  var q = parseInt(this.value, 10);
+  if (isNaN(q) || q < 1) { q = 1; }
+  document.getElementById("total").textContent = "Rs. " + (price * q);
+});
+</script>
+
+</body>
+</html>
