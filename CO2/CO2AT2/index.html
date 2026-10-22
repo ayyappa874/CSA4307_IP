@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSA43 CO-2 Assessment Tool 2 - Design Task</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: Arial, sans-serif; background: #f0f4f8; color: #1f2937; line-height: 1.6; }
+section { scroll-margin-top: 70px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 40px 15px; }
+.title { color: #1e3a8a; margin-bottom: 4px; }
+.tag { display: inline-block; background: #f59e0b; color: white; font-size: 13px; padding: 2px 12px; border-radius: 20px; margin-bottom: 6px; }
+.answer { background: white; border-left: 5px solid #2563eb; border-radius: 6px; padding: 16px 20px; margin: 15px 0; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
+.answer h4 { color: #1e3a8a; margin: 12px 0 4px; }
+.answer h4:first-child { margin-top: 0; }
+.answer ul { margin-left: 20px; }
+.demo { background: white; border-radius: 8px; padding: 20px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+.demo-title { font-weight: bold; color: #1e3a8a; margin-bottom: 10px; }
+pre { background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 6px; overflow-x: auto; font-size: 13px; margin-top: 10px; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 480px; }
+th { background: #1e3a8a; color: white; padding: 8px; text-align: left; }
+td { padding: 8px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+
+/* ---------- Hero ---------- */
+.hero { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; text-align: center; }
+.hero .wrap { padding: 50px 15px; }
+.hero h1 { font-size: 1.9rem; margin-bottom: 8px; }
+
+/* ---------- Q1 and Q5: responsive navigation bar (mobile first) ---------- */
+.nav { background: #1e3a8a; position: sticky; top: 0; z-index: 20; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+.nav-in { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; flex-wrap: wrap; padding: 0 15px; }
+.logo { color: #fbbf24; font-weight: bold; font-size: 1.3rem; padding: 12px 0; margin-right: auto; }
+.cart { background: #f59e0b; color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; margin-right: 10px; font-size: 14px; }
+.burger { background: none; border: 2px solid white; color: white; font-size: 22px; padding: 0 10px; border-radius: 5px; cursor: pointer; }
+.menu { display: none; width: 100%; list-style: none; flex-direction: column; }
+.menu.open { display: flex; }
+.menu a, .dd-btn { display: block; width: 100%; text-align: left; color: white; padding: 12px 14px; text-decoration: none; background: none; border: 0; font-size: 16px; cursor: pointer; }
+.menu a:hover, .dd-btn:hover, .menu a:focus, .dd-btn:focus { background: #3b82f6; outline: none; }
+.sub { display: none; list-style: none; background: #172f73; }
+.sub.open { display: block; }
+.sub a { padding-left: 30px; }
+@media (min-width: 768px) {                      /* tablet and desktop */
+  .burger { display: none; }
+  .menu { display: flex; flex-direction: row; width: auto; align-items: center; }
+  .menu a, .dd-btn { width: auto; }
+  .has-dd { position: relative; }
+  .sub { position: absolute; top: 100%; left: 0; min-width: 170px; z-index: 5; }
+  .has-dd:hover .sub { display: block; }
+  .sub a { padding-left: 14px; }
+}
+
+/* ---------- Q2: product hover effect ---------- */
+.cards { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.card { background: white; border-radius: 10px; overflow: hidden; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.card:hover, .card:focus-within { transform: translateY(-8px); box-shadow: 0 14px 26px rgba(0,0,0,0.25); }
+.pic-wrap { overflow: hidden; background: #dbeafe; }
+.pic { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 64px; transition: transform 0.4s ease; }
+.card:hover .pic { transform: scale(1.15); }
+.info { padding: 14px 14px 56px; text-align: center; }
+.info h3 { color: #1e3a8a; }
+.price { color: #16a34a; font-weight: bold; }
+.add { position: absolute; left: 0; right: 0; bottom: 0; background: #f59e0b; color: white; border: 0; padding: 13px; font-size: 15px;
+       cursor: pointer; transform: translateY(100%); transition: transform 0.3s ease; }
+.card:hover .add, .card:focus-within .add { transform: translateY(0); }
+@media (hover: none) { .add { transform: none; } }                 /* touch screens have no hover */
+@media (prefers-reduced-motion: reduce) { .card, .pic, .add { transition: none; } }
+
+/* ---------- Q3: dashboard (CSS Grid) ---------- */
+.dash { display: grid; gap: 12px; grid-template-columns: 1fr; grid-template-areas: 'head' 'stats' 'chart' 'table' 'side'; }
+.dash > div { padding: 14px; border-radius: 8px; color: white; font-weight: bold; }
+.d-head { grid-area: head; background: #1e3a8a; }
+.d-side { grid-area: side; background: #475569; }
+.d-chart { grid-area: chart; background: #2563eb; min-height: 120px; }
+.d-table { grid-area: table; background: #0f766e; min-height: 80px; }
+.d-stats { grid-area: stats; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); padding: 0 !important; background: none !important; }
+.d-stats span { padding: 14px; border-radius: 8px; background: #f59e0b; text-align: center; }
+@media (min-width: 768px) {
+  .dash { grid-template-columns: 170px 1fr; grid-template-areas: 'head head' 'side stats' 'side chart' 'side table'; }
+}
+
+/* ---------- Q4: mobile-first blog ---------- */
+.blog { display: grid; gap: 14px; grid-template-columns: 1fr; }
+.blog > * { background: white; border-radius: 8px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+.blog h3 { color: #1e3a8a; margin-bottom: 6px; }
+.blog p { font-size: 1.05rem; max-width: 65ch; }
+.blog a { color: #1d4ed8; }
+@media (min-width: 768px) {
+  .blog { grid-template-columns: 2fr 1fr; }
+  .blog .full { grid-column: 1 / -1; }
+}
+
+/* ---------- Q5: dynamic menu widget ---------- */
+.mw { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
+.mgroup { flex: 1 1 180px; }
+.mtoggle { width: 100%; padding: 11px; background: #2563eb; color: white; border: 0; border-radius: 5px; font-size: 15px; cursor: pointer; text-align: left; }
+.mtoggle.hl { background: #1e3a8a; }
+.mgroup ul { list-style: none; background: #e0e7ff; border-radius: 0 0 5px 5px; }
+.mgroup li { padding: 9px 12px; border-bottom: 1px solid #c7d2fe; }
+#log { background: #0f172a; color: #86efac; font-family: monospace; font-size: 13px; padding: 10px; border-radius: 6px; margin-top: 12px; min-height: 100px; }
+
+footer { background: #14213d; color: #cbd5e1; text-align: center; padding: 20px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- ============ NAVIGATION BAR (Q1 demo, Q5 toggle) ============ -->
+<header class="nav">
+  <div class="nav-in">
+    <span class="logo">ShopEase</span>
+    <span class="cart">Cart: <b id="cartCount">0</b></span>
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">&#9776;</button>
+    <ul class="menu" id="menu">
+      <li><a href="#q1">Q1 Navbar</a></li>
+      <li><a href="#q2">Q2 Hover</a></li>
+      <li><a href="#q3">Q3 Layout</a></li>
+      <li><a href="#q4">Q4 Blog</a></li>
+      <li><a href="#q5">Q5 Menu</a></li>
+      <li class="has-dd">
+        <button class="dd-btn" id="ddBtn" aria-expanded="false">Categories &#9662;</button>
+        <ul class="sub" id="sub">
+          <li><a href="#q2">Electronics</a></li>
+          <li><a href="#q2">Footwear</a></li>
+          <li><a href="#q2">Bags</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Internet Programming (CSA43) - Assessment Tool 2: Design Task</h1>
+    <p>CO-2: CSS layout, styling and JavaScript interaction | Name / Reg No: ____________________</p>
+  </div>
+</div>
+
+<!-- ============ QUESTION 1 ============ -->
+<section id="q1"><div class="wrap">
+  <span class="tag">Question 1 (4 marks)</span>
+  <h2 class="title">Responsive Navigation Bar Design</h2>
+  <p>The navigation bar at the top of this page is the live demo. Resize the window below 768 px to see the hamburger menu.</p>
+  <div class="answer">
+    <h4>(a) Key components of an e-commerce navigation bar</h4>
+    <ul>
+      <li>Brand logo linking to the home page</li>
+      <li>Main links: Home, Shop, Categories (dropdown), Deals, Contact</li>
+      <li>Search bar to find products quickly</li>
+      <li>Shopping cart icon with item count, plus account/login and wishlist</li>
+      <li>Hamburger button for small screens</li>
+    </ul>
+    <h4>(b) Design with CSS</h4>
+    <ul>
+      <li><b>Flexbox</b> aligns logo, cart and menu in one row and wraps when space ends.</li>
+      <li><b>Mobile-first</b>: the base CSS is the mobile layout; one <code>min-width: 768px</code> media query turns it into a horizontal bar.</li>
+      <li><code>position: sticky</code> keeps the bar visible while scrolling; <code>z-index</code> keeps it above content.</li>
+      <li>Links are padded to at least 44 px tall so they are easy to tap.</li>
+    </ul>
+    <h4>(c) Adaptation to smaller screens</h4>
+    <ul>
+      <li><b>Mobile (below 768 px):</b> links are hidden; the hamburger button shows them as a vertical list.</li>
+      <li><b>Tablet and desktop (768 px and above):</b> the hamburger hides and the links appear in a row; Categories opens on hover.</li>
+    </ul>
+<pre>.menu { display: none; flex-direction: column; }     /* mobile */
+.menu.open { display: flex; }
+@media (min-width: 768px) {
+  .burger { display: none; }
+  .menu { display: flex; flex-direction: row; }
+}</pre>
+    <h4>(d) Evaluation and improvements</h4>
+    <ul>
+      <li><b>Good:</b> works without scrolling sideways, large tap targets, keyboard focus style, no framework needed.</li>
+      <li><b>Improve:</b> keep the search bar visible on mobile, add a mega-menu for many categories, close the menu when tapping outside, highlight the current page, add a "skip to content" link and an icon-only cart on very small screens.</li>
+    </ul>
+  </div>
+</div></section>
+
+<!-- ============ QUESTION 2 ============ -->
+<section id="q2" style="background:#e0e7ff"><div class="wrap">
+  <span class="tag">Question 2 (4 marks)</span>
+  <h2 class="title">Product Hover Effect</h2>
+  <p>Hover over a card (or tab to it). The card lifts, the picture zooms and the Add to Cart button slides up.</p>
+  <div class="cards" style="margin:18px 0">
+    <div class="card"><div class="pic-wrap"><div class="pic">&#127911;</div></div><div class="info"><h3>Wireless Earbuds</h3><p class="price">Rs. 1,999</p></div><button class="add">Add to Cart</button></div>
+    <div class="card"><div class="pic-wrap"><div class="pic">&#128095;</div></div><div class="info"><h3>Running Shoes</h3><p class="price">Rs. 2,499</p></div><button class="add">Add to Cart</button></div>
+    <div class="card"><div class="pic-wrap"><div class="pic">&#127890;</div></div><div class="info"><h3>Travel Backpack</h3><p class="price">Rs. 1,299</p></div><button class="add">Add to Cart</button></div>
+  </div>
+  <div class="answer">
+    <h4>(a) Suitable CSS properties</h4>
+    <ul>
+      <li><code>:hover</code> and <code>:focus-within</code> selectors to trigger the effect</li>
+      <li><code>transform</code> (translate, scale), <code>box-shadow</code>, <code>opacity</code>, <code>background-color</code>, <code>border-color</code>, <code>filter</code></li>
+      <li><code>transition</code> (duration, timing function) and <code>cursor: pointer</code></li>
+    </ul>
+    <h4>(b) Suitable transition or animation</h4>
+    <div class="scroll"><table>
+      <tr><th>Option</th><th>Use</th></tr>
+      <tr><td><code>transition: transform 0.3s ease</code></td><td>Best for hover. Smooth change between two states, no extra code.</td></tr>
+      <tr><td><code>@keyframes</code> animation</td><td>For repeating or multi-step effects (for example a pulsing "Sale" badge).</td></tr>
+    </table></div>
+    <p>Choice: <b>transition</b>, 0.3 s with <code>ease</code>, because hover is a simple two-state change.</p>
+    <h4>(c) Design of the hover effect</h4>
+<pre>.card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.card:hover { transform: translateY(-8px);
+              box-shadow: 0 14px 26px rgba(0,0,0,0.25); }
+.card:hover .pic { transform: scale(1.15); }
+.card:hover .add { transform: translateY(0); }   /* button slides up */</pre>
+    <h4>(d) Performance and user experience</h4>
+    <ul>
+      <li>Animate only <code>transform</code> and <code>opacity</code>. The browser handles these on the GPU, so no re-layout. Animating <code>width</code>, <code>height</code>, <code>top</code> or <code>margin</code> makes the page jerky.</li>
+      <li>Keep durations at 200 to 400 ms so it feels quick but visible.</li>
+      <li>Touch screens have no hover, so <code>@media (hover: none)</code> shows the button always.</li>
+      <li><code>:focus-within</code> gives keyboard users the same effect.</li>
+      <li><code>prefers-reduced-motion</code> turns animations off for users who are sensitive to motion.</li>
+    </ul>
+  </div>
+</div></section>
+
+<!-- ============ QUESTION 3 ============ -->
+<section id="q3"><div class="wrap">
+  <span class="tag">Question 3 (4 marks)</span>
+  <h2 class="title">Layout Selection: Flexbox vs Grid</h2>
+  <div class="demo">
+    <div class="demo-title">Live dashboard built with CSS Grid (resize to see it reflow)</div>
+    <div class="dash">
+      <div class="d-head">Dashboard Header</div>
+      <div class="d-side">Sidebar menu</div>
+      <div class="d-stats"><span>Users<br>1,240</span><span>Orders<br>386</span><span>Revenue<br>Rs. 92k</span><span>Returns<br>12</span></div>
+      <div class="d-chart">Chart area</div>
+      <div class="d-table">Orders table</div>
+    </div>
+<pre>.dash { display: grid; grid-template-columns: 1fr;
+        grid-template-areas: 'head' 'stats' 'chart' 'table' 'side'; }
+@media (min-width: 768px) {
+  .dash { grid-template-columns: 170px 1fr;
+          grid-template-areas: 'head head' 'side stats' 'side chart' 'side table'; }
+}</pre>
+  </div>
+  <div class="answer">
+    <h4>(a) Layout requirements of a dashboard</h4>
+    <ul>
+      <li><b>Rows:</b> header, then stat cards, chart and table below</li>
+      <li><b>Columns:</b> fixed sidebar plus a flexible main area</li>
+      <li><b>Alignment:</b> cards the same height, content aligned in both directions, consistent gaps</li>
+      <li>Reflow to one column on phones</li>
+    </ul>
+    <h4>(b) Flexbox compared with Grid</h4>
+    <div class="scroll"><table>
+      <tr><th>Point</th><th>Flexbox</th><th>Grid</th></tr>
+      <tr><td>Dimension</td><td>One dimension (row or column)</td><td>Two dimensions (rows and columns together)</td></tr>
+      <tr><td>Approach</td><td>Content-first: items decide the size</td><td>Layout-first: you define the tracks</td></tr>
+      <tr><td>Placement</td><td>Order and alignment along one axis</td><td>Exact cells and named areas (<code>grid-template-areas</code>)</td></tr>
+      <tr><td>Best for</td><td>Navbars, button groups, card content</td><td>Page and dashboard layouts, galleries</td></tr>
+      <tr><td>Spanning</td><td>Hard</td><td>Easy (<code>grid-column: 1 / -1</code>)</td></tr>
+    </table></div>
+    <h4>(c) Choice and justification</h4>
+    <p><b>CSS Grid</b> for the dashboard frame, because the layout needs rows and columns at once, spanning cells (header across the top, sidebar down the side) and a layout that can be redefined in one place with named areas. Flexbox is still used inside single widgets, for example aligning items inside a stat card.</p>
+    <h4>(d) Scalability and responsiveness</h4>
+    <ul>
+      <li><code>repeat(auto-fit, minmax(110px, 1fr))</code> adds or removes stat cards by itself as width changes.</li>
+      <li>New widgets only need a new grid area; no HTML restructuring.</li>
+      <li>One media query redefines the whole layout, with no JavaScript.</li>
+      <li>Limit: very old browsers (such as IE10) lack modern Grid support, which is rarely a concern today.</li>
+    </ul>
+  </div>
+</div></section>
+
+<!-- ============ QUESTION 4 ============ -->
+<section id="q4" style="background:#e0e7ff"><div class="wrap">
+  <span class="tag">Question 4 (4 marks)</span>
+  <h2 class="title">Mobile-First Blog Layout</h2>
+  <div class="blog">
+    <header class="full"><h3>The Daily Dev Blog</h3><a href="#q4">Home</a> | <a href="#q4">Articles</a> | <a href="#q4">About</a></header>
+    <article>
+      <h3>Why mobile-first works</h3>
+      <p>Start with the small screen, keep only what matters, then add space and columns as the screen grows. The text line stays about 65 characters wide so it is easy to read.</p>
+    </article>
+    <aside><h3>Categories</h3><p>CSS &middot; JavaScript &middot; Design</p></aside>
+    <footer class="full">&copy; 2026 The Daily Dev | Contact | Privacy</footer>
+  </div>
+<pre>.blog { display: grid; grid-template-columns: 1fr; gap: 14px; }   /* mobile */
+@media (min-width: 768px) {
+  .blog { grid-template-columns: 2fr 1fr; }                        /* article + sidebar */
+  .blog .full { grid-column: 1 / -1; }
+}</pre>
+  <div class="answer">
+    <h4>(a) Key sections of a blog layout</h4>
+    <p>Header with logo and navigation, featured image, article list or post content, sidebar (categories, recent posts, search), comments, and footer.</p>
+    <h4>(b) Mobile-first design</h4>
+    <p>Base CSS is a single column with stacked sections, fluid width and readable text. No media query is needed for phones, so they download the simplest CSS.</p>
+    <h4>(c) Scaling to larger screens</h4>
+    <p>At 768 px a <code>min-width</code> media query makes two columns (article 2fr, sidebar 1fr), with header and footer spanning both. Larger screens could add a third column or a wider container.</p>
+    <h4>(d) Accessibility and readability</h4>
+    <ul>
+      <li><b>Readability:</b> font size 16 px or more, <code>line-height</code> 1.6, line length near 65 characters (<code>max-width: 65ch</code>), generous spacing.</li>
+      <li><b>Accessibility:</b> semantic tags (<code>header</code>, <code>article</code>, <code>aside</code>, <code>footer</code>), heading hierarchy, text contrast of at least 4.5:1, <code>alt</code> text on images, visible focus outlines, no fixed-size text.</li>
+      <li><b>Improve:</b> add a skip link, a dark mode and a print stylesheet.</li>
+    </ul>
+  </div>
+</div></section>
+
+<!-- ============ QUESTION 5 ============ -->
+<section id="q5"><div class="wrap">
+  <span class="tag">Question 5 (4 marks)</span>
+  <h2 class="title">JavaScript Event Handling for Dynamic Menu</h2>
+  <div class="demo">
+    <div class="demo-title">Live demo: click a heading, hover over it, or press Esc. Events appear in the log.</div>
+    <div class="mw">
+      <div class="mgroup"><button class="mtoggle" data-target="m1" aria-expanded="false">Men</button>
+        <ul id="m1" hidden><li>Shirts</li><li>Jeans</li><li>Shoes</li></ul></div>
+      <div class="mgroup"><button class="mtoggle" data-target="m2" aria-expanded="false">Women</button>
+        <ul id="m2" hidden><li>Dresses</li><li>Handbags</li><li>Sandals</li></ul></div>
+      <div class="mgroup"><button class="mtoggle" data-target="m3" aria-expanded="false">Electronics</button>
+        <ul id="m3" hidden><li>Phones</li><li>Laptops</li><li>Earbuds</li></ul></div>
+    </div>
+    <div id="log">Event log...</div>
+  </div>
+  <div class="answer">
+    <h4>(a) Appropriate JavaScript events</h4>
+    <ul>
+      <li><code>click</code>: open or close the menu (works on mouse and touch)</li>
+      <li><code>mouseenter</code> / <code>mouseleave</code>: hover highlight on desktop</li>
+      <li><code>keydown</code>: Esc closes the menu; Enter and Space on buttons for keyboard users</li>
+      <li><code>focus</code> / <code>blur</code>, and <code>resize</code> (reset the menu when the window grows)</li>
+    </ul>
+    <h4>(b) Event handling logic for the toggle</h4>
+    <p>On click: find the panel, remember if it was open, close all panels, then open this one only if it was closed. Update <code>aria-expanded</code> so screen readers know the state.</p>
+<pre>button.addEventListener("click", function () {
+  var panel = document.getElementById(this.dataset.target);
+  var wasOpen = !panel.hidden;
+  closeAll();
+  if (!wasOpen) { panel.hidden = false; this.setAttribute("aria-expanded", "true"); }
+});</pre>
+    <h4>(c) Implementation for user actions</h4>
+    <p>Click toggles the panel, mouseenter and mouseleave add and remove a highlight class, and keydown for Esc calls <code>closeAll()</code>. The navbar hamburger at the top of this page uses the same toggle idea with a CSS class (<code>open</code>).</p>
+    <h4>(d) Performance and improvements</h4>
+    <ul>
+      <li>Toggle CSS classes or the <code>hidden</code> attribute instead of setting many inline styles.</li>
+      <li>Use <b>event delegation</b> (one listener on the menu) when there are many items.</li>
+      <li>Debounce <code>resize</code> handlers; use passive listeners for touch and scroll.</li>
+      <li>Close the menu on outside click, add arrow-key navigation and focus trapping for accessibility.</li>
+    </ul>
+  </div>
+</div></section>
+
+<footer>Internet Programming (CSA43) - Assessment Tool 2 | SIMATS Engineering | HTML, CSS, JavaScript</footer>
+
+<!-- ============ SCRIPT: NAVBAR HAMBURGER AND DROPDOWN ============ -->
+<script>
+var burger = document.getElementById("burger");
+var menu = document.getElementById("menu");
+var ddBtn = document.getElementById("ddBtn");
+var sub = document.getElementById("sub");
+
+burger.addEventListener("click", function () {
+  var isOpen = menu.classList.toggle("open");
+  burger.setAttribute("aria-expanded", isOpen);
+  burger.innerHTML = isOpen ? "&times;" : "&#9776;";
+});
+
+ddBtn.addEventListener("click", function () {
+  var isOpen = sub.classList.toggle("open");
+  ddBtn.setAttribute("aria-expanded", isOpen);
+});
+
+menu.addEventListener("click", function (e) {            // close menu after choosing a link
+  if (e.target.tagName === "A") {
+    menu.classList.remove("open");
+    sub.classList.remove("open");
+    burger.innerHTML = "&#9776;";
+  }
+});
+
+window.addEventListener("resize", function () {          // reset when screen becomes wide
+  if (window.innerWidth >= 768) {
+    menu.classList.remove("open");
+    sub.classList.remove("open");
+    burger.innerHTML = "&#9776;";
+  }
+});
+</script>
+
+<!-- ============ SCRIPT: CART COUNTER (Q2 cards) ============ -->
+<script>
+var cartCount = 0;
+var addButtons = document.querySelectorAll(".add");
+for (var i = 0; i < addButtons.length; i++) {
+  addButtons[i].addEventListener("click", function () {
+    cartCount++;
+    document.getElementById("cartCount").innerHTML = cartCount;
+    this.innerHTML = "Added";
+  });
+}
+</script>
+
+<!-- ============ SCRIPT: DYNAMIC MENU (Q5) ============ -->
+<script>
+var logBox = document.getElementById("log");
+var toggles = document.querySelectorAll(".mtoggle");
+
+function log(text) {
+  var line = document.createElement("div");
+  line.textContent = text;
+  logBox.insertBefore(line, logBox.firstChild);
+  while (logBox.children.length > 5) { logBox.removeChild(logBox.lastChild); }
+}
+
+function closeAll() {
+  for (var i = 0; i < toggles.length; i++) {
+    document.getElementById(toggles[i].dataset.target).hidden = true;
+    toggles[i].setAttribute("aria-expanded", "false");
+  }
+}
+
+for (var j = 0; j < toggles.length; j++) {
+  toggles[j].addEventListener("click", function () {
+    var panel = document.getElementById(this.dataset.target);
+    var wasOpen = !panel.hidden;
+    closeAll();
+    if (!wasOpen) {
+      panel.hidden = false;
+      this.setAttribute("aria-expanded", "true");
+    }
+    log("click: " + this.textContent + (wasOpen ? " (closed)" : " (opened)"));
+  });
+  toggles[j].addEventListener("mouseenter", function () {
+    this.classList.add("hl");
+    log("mouseenter: " + this.textContent);
+  });
+  toggles[j].addEventListener("mouseleave", function () {
+    this.classList.remove("hl");
+  });
+}
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") {
+    closeAll();
+    log("keydown: Escape (all menus closed)");
+  }
+});
+</script>
+
+</body>
+</html>
